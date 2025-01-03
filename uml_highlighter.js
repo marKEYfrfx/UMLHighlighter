@@ -3,41 +3,12 @@
  */
 Draw.loadPlugin(function(editorUi)
 {
-	var div = document.createElement('div');
 	
 	// Adds resource for action
-	mxResources.parse('anonymizeCurrentPage=Anonymize Current Page');
-
-	function replaceTextContent(elt)
-	{
-		if (elt.nodeValue != null)
-		{
-			elt.nodeValue = editorUi.anonymizeString(elt.nodeValue);
-		}
-		
-		if (elt.nodeType == mxConstants.NODETYPE_ELEMENT)
-		{
-			var tmp = elt.firstChild;
-			
-			while (tmp != null)
-			{
-				replaceTextContent(tmp);
-				tmp = tmp.nextSibling;
-			}
-		}
-	};
-	
-	function anonymizeHtml(html)
-	{
-		div.innerHTML = Graph.sanitizeHtml(html);
-		
-		replaceTextContent(div);
-		
-		return div.innerHTML;
-	};
+	mxResources.parse('UMLHighlighter=UML Highlighter');
 
 	// Adds action
-	editorUi.actions.addAction('anonymizeCurrentPage', function()
+	editorUi.actions.addAction('UMLHighlighter', function()
 	{
 		var graph = editorUi.editor.graph;
 		var model = graph.model;
@@ -52,29 +23,12 @@ Draw.loadPlugin(function(editorUi)
 			{
 				var cell = model.cells[id];
 				var label = graph.getLabel(cell);
-				
-				if (graph.isHtmlLabel(cell))
-				{
-					label = anonymizeHtml(label);
-				}
-				else
-				{
-					label = editorUi.anonymizeString(label);
-				}
-				
 				queue.push({cell: cell, label: label});
 			}
 			
 			for (var i = 0; i < queue.length; i++)
 			{
 				model.setValue(queue[i].cell, queue[i].label);
-			}
-						
-			// Change page title
-			if (editorUi.currentPage != null)
-			{
-				model.execute(new RenamePage(editorUi, editorUi.currentPage,
-					editorUi.anonymizeString(editorUi.currentPage.getName())));
 			}
 		}
 		finally
@@ -90,7 +44,7 @@ Draw.loadPlugin(function(editorUi)
 	{
 		oldFunct.apply(this, arguments);
 		
-		editorUi.menus.addMenuItems(menu, ['-', 'anonymizeCurrentPage'], parent);
+		editorUi.menus.addMenuItems(menu, ['-', 'UMLHighlighter'], parent);
 	};
 
 });
