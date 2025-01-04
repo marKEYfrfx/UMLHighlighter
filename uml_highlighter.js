@@ -17,11 +17,19 @@ Draw.loadPlugin(function(editorUi)
 		try
 		{
 			// Queue used to fix ancestor placeholders
-			var queue = [];
+			var queue = [];	
 
 			for (var id in model.cells)
 			{
 				var cell = model.cells[id];
+				let cell_style = cell.style
+				if (cell_style != null)
+				{
+					if (cell_style.includes("childLayout"))
+						{
+							console.log(cell.value)
+						}
+				}
 				var label = graph.getLabel(cell);
 				queue.push({cell: cell, label: label});
 			}
