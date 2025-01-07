@@ -16,33 +16,32 @@ Draw.loadPlugin(function(editorUi)
 		model.beginUpdate();
 		try
 		{
-			// Queue used to fix ancestor placeholders
-			var queue = [];	
-
+			let class_names = new Array();
 			for (var id in model.cells)
 			{
 				var cell = model.cells[id];
-				let cell_style = cell.style
+				let cell_style = cell.style;
 				if (cell_style != null)
 				{
 					if (cell_style.includes("childLayout"))
 						{
-							console.log(cell.value)
+							class_names.push(cell)
 						}
 				}
-				var label = graph.getLabel(cell);
-				queue.push({cell: cell, label: label});
 			}
-			
-			for (var i = 0; i < queue.length; i++)
-			{
-				model.setValue(queue[i].cell, queue[i].label);
-			}
+			console.log(class_names)
+			class_names.forEach(function(class_cell)
+				{
+					class_cell.style = class_cell.style + "fillColor=#f8cecc;strokeColor=#b85450;"
+					model.setValue(class_cell, graph.getLabel(class_cell));
+				}
+			)
 		}
 		finally
 		{
 			model.endUpdate();
 		}
+		graph.refresh();
 	});
 	
 	var menu = editorUi.menus.get('extras');
