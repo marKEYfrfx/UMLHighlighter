@@ -20,35 +20,40 @@ const aferType = [
 ]
 
 
-function parseMethod(methodCell) {
+function parseMethod(methodCell, graph, model) {
 	let methodTokens = methodCell.value.match(cellRegex).filter(token => token.charAt(0) != '<');
 	let scopeIdx = methodTokens.findIndex(token => token == "+" || token == "-");
 }
 
-function parseField(fieldCell) {
-	console.log(fieldCell.value.match(cellRegex))
+function parseField(fieldCell, graph, model) {
 	let fieldTokens = fieldCell.value.match(cellRegex).filter(token => token.charAt(0) != '<');
 	let scopeIdx = fieldTokens.findIndex(token => token == "+" || token == "-");
-	let colonIdx = fieldTokens.findIndex(token => token == ":"); 
-	
+	let colonIdx = fieldTokens.findIndex(token => token == ":");
+	fieldTokens.splice(fieldTokens.length, 0, ...aferType);
+	fieldTokens.splice(colonIdx + 1, 0, ...beforeType);
+	fieldTokens.splice(colonIdx, 0, ...aferVar);
+	fieldTokens.splice(scopeIdx, 0, ...beforeVar)
+	console.log(fieldTokens);
+	fieldCell.value = fieldTokens.join(" ");
+	model.setValue(fieldCell, graph.getLabel(fieldCell));
 }
 
-function parseClassMembers(memberCells) {
+function parseClassMembers(memberCells, graph, model) {
 	if (memberCells != null) {
-		let memberFunc = (cell) => parseField(cell);
+		let memberFunc = (cell, graph, model) => parseField(cell, graph, model);
 		memberCells.forEach(function (member) {
 			if (member.style.includes("line")) {
-				memberFunc = (cell) => parseMethod(cell);
+				memberFunc = (cell, graph, model) => parseMethod(cell, graph, model);
 			} else {
-				memberFunc(member)
+				memberFunc(member, graph, model)
 			}
 		}
 		)
 	}
 }
 
-function parseClassCell(classCell) {
-	parseClassMembers(classCell.children)
+function parseClassCell(classCell, graph, model) {
+	parseClassMembers(classCell.children, graph, model)
 }
 
 /**
@@ -69,7 +74,7 @@ Draw.loadPlugin(function (editorUi) {
 			root.children.forEach(function (cell) {
 				if (cell != null) {
 					if (cell.style.includes("childLayout")) {
-						parseClassCell(cell)
+						parseClassCell(cell, graph, model)
 					}
 				}
 			})
