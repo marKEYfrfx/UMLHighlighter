@@ -32,14 +32,17 @@ Draw.loadPlugin(function (editorUi) {
 		var graph = editorUi.editor.graph;
 		var model = graph.model;
 		let methodTokens = methodCell.value.match(cellRegex).filter(token => token.charAt(0) != '<');
-		let scopeIdx = methodTokens.findIndex(token => token == "+" || token == "-");
+		console.log(methodTokens);
+		let paramIdx = methodTokens.findIndex(token => token == "(");
+		let colonIdx = methodTokens.findIndex(token => token == ":");
+
+		model.setValue(methodCell, methodTokens.join(" "));
 	}
 
 	function parseField(fieldCell) {
 		var graph = editorUi.editor.graph;
 		var model = graph.model;
 		let fieldTokens = fieldCell.value.match(cellRegex).filter(token => token.charAt(0) != '<');
-		console.log(fieldTokens);
 		let scopeIdx = fieldTokens.findIndex(token => token == "+" || token == "-");
 		let colonIdx = fieldTokens.findIndex(token => token == ":");
 		fieldTokens.splice(fieldTokens.length, 0, ...aferType);
