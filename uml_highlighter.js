@@ -2,7 +2,7 @@
  * Explore plugin.
  */
 Draw.loadPlugin(function (editorUi) {
-	
+
 	// Adds resource for action
 	mxResources.parse('UMLHighlighter=UML Highlighter');
 
@@ -32,11 +32,71 @@ Draw.loadPlugin(function (editorUi) {
 		var graph = editorUi.editor.graph;
 		var model = graph.model;
 		let methodTokens = methodCell.value.match(cellRegex).filter(token => token.charAt(0) != '<');
-		console.log(methodTokens);
-		let paramIdx = methodTokens.findIndex(token => token == "(");
-		let colonIdx = methodTokens.findIndex(token => token == ":");
-
-		model.setValue(methodCell, methodTokens.join(" "));
+		let updatedMethodTokens = [];
+		let states = ["q0", "q1", "q2", "q3", "q4", "q5", "q6"];
+		curState = states[0];
+		while (methodTokens.length > 0) {
+			let curToken = methodTokens.shift();
+			switch (curState) {
+				case states[0]:
+					if (curToken === "(") {
+						curState = states[1];
+					}
+					updatedMethodTokens.push(curToken);
+					break;
+				case states[1]:
+					if (curToken === ")") {
+						curState = states[3];
+						updatedMethodTokens.push(curToken);
+					} else {
+						updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...beforeType);
+						updatedMethodTokens.push(curToken);
+						updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...aferType);
+						curState = states[2];
+					}
+					break;
+				case states[2]:
+					if (curToken === ",") {
+						curState = states[6];
+						updatedMethodTokens.push(curToken)
+					} else if (curToken === ")"){
+						curState = states[3];
+						updatedMethodTokens.push(curToken)
+					}
+					else {
+						updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...beforeVar);
+						updatedMethodTokens.push(curToken);
+						updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...aferVar);
+						curState = states[5];
+					}
+					break;
+				case states[3]:
+					curState = states[4]
+					updatedMethodTokens.push(curToken)
+					break;
+				case states[4]:
+					updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...beforeType);
+					updatedMethodTokens.push(curToken);
+					updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...aferType);
+					break;
+				case states[5]:
+					if (curToken === ",") {
+						curState = states[6];
+					} else if (curToken === ")") {
+						curState = states[3];
+					}
+					updatedMethodTokens.push(curToken)
+					break;
+				case states[6]:
+					if (curToken === ")") {
+						curState = states[3]
+					}
+					updatedMethodTokens.push(curToken)
+					break;
+			}
+		}
+		console.log(updatedMethodTokens);
+		model.setValue(methodCell, updatedMethodTokens.join(" "));
 	}
 
 	function parseField(fieldCell) {
