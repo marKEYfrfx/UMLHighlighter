@@ -121,15 +121,21 @@ Draw.loadPlugin(function (editorUi) {
 				if (member.style.includes("line")) {
 					memberFunc = (cell) => parseMethod(cell);
 				} else {
-					memberFunc(member)
+					memberFunc(member);
+					var tempStyle = member.style;
+					if (tempStyle.includes("autosize")){
+						var tempIdx = tempStyle.indexOf("autosize=");
+						model.setStyle(member, tempStyle.replace("autosize=0", "autosize=1"));
+					}
+					if (tempStyle.endsWith(';')){
+						model.setStyle(member, tempStyle.concat("autosize=1;"));
+					} else {
+						model.setStyle(member, tempStyle.concat(";autosize=1;"));
+					}
 				}
 			}
 			)
 		}
-	}
-
-	function parseClassCell(classCell) {
-		parseClassMembers(classCell.children)
 	}
 
 	// Adds action
@@ -142,10 +148,12 @@ Draw.loadPlugin(function (editorUi) {
 			root.children.forEach(function (cell) {
 				if (cell != null) {
 					if (cell.style.includes("childLayout")) {
-						parseClassCell(cell, graph, model)
+						parseClassMembers(cell.children)
 					}
 				}
 			})
+			graph.refresh();
+			graph.autoSizeCell(root, true);
 		}
 		finally {
 			model.endUpdate();
