@@ -1,13 +1,15 @@
 /**
- * Explore plugin.
+ * @file uml_highlighter.js
+ * @author Mark Ackerman
+ * @email markeyhackerman@gmail.com
+ * @description Draw.io Plugin to apply styling's to differentiate the semantic meaning of text in a class diagram
+ * 
  */
 Draw.loadPlugin(function (editorUi) {
-
-	// Adds resource for action
 	mxResources.parse('UMLHighlighter=UML Highlighter');
 
-
 	const cellRegex = /<[^>]*>|[a-zA-Z0-9]+\[[^\]]*\]|[^< >,!?+-:\(\)]+|[<>,!?+-:\(\)]/g;
+
 	const beforeVar = [
 		"<font face=\"Helvetica\" color=\"#3d0dff\">",
 		"<b>",
@@ -64,7 +66,7 @@ Draw.loadPlugin(function (editorUi) {
 						curState = states[6];
 						updatedMethodTokens.push(curToken)
 						updatedMethodTokens.push(" ")
-					} else if (curToken === ")"){
+					} else if (curToken === ")") {
 						curState = states[3];
 						updatedMethodTokens.push(curToken)
 					}
@@ -105,7 +107,7 @@ Draw.loadPlugin(function (editorUi) {
 					break;
 			}
 		}
-		console.log(updatedMethodTokens);
+
 		model.setValue(methodCell, updatedMethodTokens.join(""));
 	}
 
@@ -133,11 +135,11 @@ Draw.loadPlugin(function (editorUi) {
 				} else {
 					memberFunc(member);
 					var tempStyle = member.style;
-					if (tempStyle.includes("autosize")){
+					if (tempStyle.includes("autosize")) {
 						var tempIdx = tempStyle.indexOf("autosize=");
 						model.setStyle(member, tempStyle.replace("autosize=0", "autosize=1"));
 					}
-					if (tempStyle.endsWith(';')){
+					if (tempStyle.endsWith(';')) {
 						model.setStyle(member, tempStyle.concat("autosize=1;"));
 					} else {
 						model.setStyle(member, tempStyle.concat(";autosize=1;"));
@@ -148,11 +150,12 @@ Draw.loadPlugin(function (editorUi) {
 		}
 	}
 
-	// Adds action
+	// Adds static button on top toolbar to process UML diagrams.
+	// Future wish list is to dynamically style UML diagrams.
 	editorUi.actions.addAction('UMLHighlighter', function () {
 		var graph = editorUi.editor.graph;
 		var model = graph.model;
-		var root = model.getCell(1); //Don't know why but root sin't actually root?!??!
+		var root = model.getCell(1); //Root is 1, not 0.
 		model.beginUpdate();
 		try {
 			root.children.forEach(function (cell) {
