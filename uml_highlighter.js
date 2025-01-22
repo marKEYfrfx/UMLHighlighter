@@ -7,7 +7,7 @@ Draw.loadPlugin(function (editorUi) {
 	mxResources.parse('UMLHighlighter=UML Highlighter');
 
 
-	const cellRegex = /<[^>]*>|[^< >,!?+-:\(\)]+|[<>,!?+-:\(\)]/g;
+	const cellRegex = /<[^>]*>|[a-zA-Z0-9]+\[[^\]]*\]|[^< >,!?+-:\(\)]+|[<>,!?+-:\(\)]/g;
 	const beforeVar = [
 		"<font face=\"Helvetica\" color=\"#3d0dff\">",
 		"<b>",
@@ -41,6 +41,10 @@ Draw.loadPlugin(function (editorUi) {
 				case states[0]:
 					if (curToken === "(") {
 						curState = states[1];
+					} else {
+						updatedMethodTokens.push(curToken);
+						updatedMethodTokens.push(" ");
+						curToken = methodTokens.shift();
 					}
 					updatedMethodTokens.push(curToken);
 					break;
@@ -59,11 +63,13 @@ Draw.loadPlugin(function (editorUi) {
 					if (curToken === ",") {
 						curState = states[6];
 						updatedMethodTokens.push(curToken)
+						updatedMethodTokens.push(" ")
 					} else if (curToken === ")"){
 						curState = states[3];
 						updatedMethodTokens.push(curToken)
 					}
 					else {
+						updatedMethodTokens.push(" ")
 						updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...beforeVar);
 						updatedMethodTokens.push(curToken);
 						updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...aferVar);
@@ -75,6 +81,7 @@ Draw.loadPlugin(function (editorUi) {
 					updatedMethodTokens.push(curToken)
 					break;
 				case states[4]:
+					updatedMethodTokens.push(" ");
 					updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...beforeType);
 					updatedMethodTokens.push(curToken);
 					updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...aferType);
@@ -91,12 +98,15 @@ Draw.loadPlugin(function (editorUi) {
 					if (curToken === ")") {
 						curState = states[3]
 					}
-					updatedMethodTokens.push(curToken)
+					updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...beforeType);
+					updatedMethodTokens.push(curToken);
+					updatedMethodTokens.splice(updatedMethodTokens.length, 0, ...aferType);
+					curState = states[2]
 					break;
 			}
 		}
 		console.log(updatedMethodTokens);
-		model.setValue(methodCell, updatedMethodTokens.join(" "));
+		model.setValue(methodCell, updatedMethodTokens.join(""));
 	}
 
 	function parseField(fieldCell) {
