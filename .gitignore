@@ -1,2 +1,4 @@
 *.drawio
 \.vscode
+\node_modules
+\dist
