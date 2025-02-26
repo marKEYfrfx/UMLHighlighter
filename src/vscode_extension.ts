@@ -1,7 +1,6 @@
 import { ExtensionContext } from 'vscode';
-import DrawioExtensionApi from 'raw-loader!./../vscode-drawio/src/DrawioExtensionApi';
-import DocumentContext from 'raw-loader!./../vscode-drawio/src/DrawioExtensionApi';
-import drawio_plugin from 'raw-loader!./../dist/uml_highlighter.webpack.js';
+import { DrawioExtensionApi, DocumentContext } from './vscode-drawio/src/DrawioExtensionApi';
+import drawio_plugin from 'raw-loader!./uml_highlighter';
 
 export function activate(context: ExtensionContext) {
 	let api: DrawioExtensionApi;
@@ -16,4 +15,3 @@ export function activate(context: ExtensionContext) {
 	}
 	return api;
 };
-
