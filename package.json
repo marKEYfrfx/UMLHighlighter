@@ -11,12 +11,21 @@
   "activationEvents": [],
   "main": "dist/vscode_extension.js",
   "contributes": {},
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "js,ts"
+    }
+  },
   "scripts": {
     "vscode:prepublish": "npm run build",
     "vscode:package": "npm run build && vsce package",
     "webpack": "webpack --mode production",
     "build": "npm run webpack",
-    "publish": "vsce publish"
+    "publish": "vsce publish",
+    "watch": "npm-watch"
   },
   "devDependencies": {
     "@types/node": "^16.11.4",
@@ -31,5 +40,8 @@
     "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1"
   },
-  "isDrawioExtension": true
+  "isDrawioExtension": true,
+  "dependencies": {
+    "npm-watch": "^0.13.0"
+  }
 }
