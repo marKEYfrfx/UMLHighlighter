@@ -25,14 +25,10 @@ Draw.loadPlugin((editorUi) => {
 
     function parseMethod(methodCell: DrawioCell): void {
         const cellLabel : string = graph.getLabel(methodCell);
-        console.log(cellLabel);
         const rawMatches = (cellLabel || "").match(cellRegex) as string[];
-        console.log(rawMatches);
         const methodTokens: string[] = (rawMatches).filter(
             (t) => t.charAt(0) !== "<"
         );
-
-        console.log("methodTokens:" + methodTokens);
         const updatedMethodTokens: string[] = [];
 
         // States for method parsing.
@@ -107,7 +103,6 @@ Draw.loadPlugin((editorUi) => {
 					break;
 			}
 		});
-        console.log(updatedMethodTokens);
         // Update the cell value with the new tokens.
         model.setValue(methodCell, updatedMethodTokens.join(""));
     }
@@ -130,23 +125,48 @@ Draw.loadPlugin((editorUi) => {
         model.setValue(fieldCell, fieldTokens.join(" "));
     }
 
+    function parseStyleString(styleStr: string): Map<string, string | undefined> {
+        const styleObj: Map<string, string | undefined> = new Map<string, string | undefined>();
+      
+        styleStr.split(';').forEach(pair => {
+          const trimmedPair = pair.trim();
+          if (!trimmedPair) {
+            return;
+          }
+      
+          // We may have "key=value" or just "key" (with no equals sign)
+          const splitPair = trimmedPair.split('=');
+          const key = splitPair[0]?.trim();
+          const val = (splitPair.length > 1) ? splitPair[1]?.trim() : undefined;
+      
+          if (key) {
+            styleObj.set(key, val);
+          }
+        });
+        return styleObj;
+      }
+      
+
+      function styleObjectToString(styleObj: Map<string, string | undefined>): string {
+        const parts = Array.from(styleObj.entries()).map(([key, val]) => {
+          return val === undefined ? key : `${key}=${val}`;
+        });
+        return parts.join(';') + ';';
+      }
+      
+
 	function parseClassMembers(memberCells : DrawioCell[]) {
 		if (memberCells != null) {
 			let memberFunc = (cell : DrawioCell) => parseField(cell);
 			memberCells.forEach(function (member) {
-				if (member.style.includes("line")) {
+                let memStyle = parseStyleString(member.style);
+				if (memStyle.has("line")) {
 					memberFunc = (cell) => parseMethod(cell);
 				} else {
-					memberFunc(member);
-					var tempStyle = member.style;
-					if (tempStyle.includes("autosize")){
-						model.setStyle(member, tempStyle.replace("autosize=0", "autosize=1"));
-					}
-					if (tempStyle.endsWith(';')){
-						model.setStyle(member, tempStyle.concat("autosize=1;"));
-					} else {
-						model.setStyle(member, tempStyle.concat(";autosize=1;"));
-					}
+                    memStyle.set("autosize", "1");
+                    memStyle.set("html", "1");
+                    model.setStyle(member, styleObjectToString(memStyle));
+                    memberFunc(member);
 				}
 			}
 			)
@@ -154,20 +174,16 @@ Draw.loadPlugin((editorUi) => {
 	}
 
     editorUi.actions.addAction("UMLHighlighter", () => {
-        const root: DrawioCell = model.cells["1"] as DrawioCell;
-
         model.beginUpdate();
         console.log("update");
         try {
-            if (root && root.children) {
-                root.children.forEach((cell: DrawioCell) => {
-                    if (cell.style.includes("stackLayout")) {
-                        parseClassMembers(cell.children || []);
-                    }
-                });
-                graph.refresh();
-                graph.autoSizeCell(root, true);
-            }
+            const vertices = Object.values(graph.model.cells)
+            .filter((c) => graph.model.isVertex(c))
+            .filter((c) => c.style.includes("stackLayout"))
+            .map((c: any) => ({ id: c.id, label: graph.getLabel(c) }));
+            vertices.forEach((vert) => {parseClassMembers(model.cells[vert.id].children || []);});
+            graph.refresh();
+            graph.autoSizeCell(model.root, true);
         } finally {
             model.endUpdate();
         }
