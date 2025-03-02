@@ -15,6 +15,7 @@
 		"src/uml_highlighter.ts",
 		"src/vscode_extension.ts",
 		"src/vscode-drawio/src/DrawioExtensionApi.ts",
-		"src/vscode-drawio/drawio-custom-plugins/src/drawio-types.d.ts"
+		"src/vscode-drawio/drawio-custom-plugins/src/types.d.ts",
+        "src/vscode-drawio/drawio-custom-plugins/src/drawio-types.d.ts"
 	]
 }

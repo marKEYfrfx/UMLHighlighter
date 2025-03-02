@@ -23,6 +23,7 @@
     "vscode:prepublish": "npm run build",
     "vscode:package": "npm run build && vsce package",
     "webpack": "webpack --mode production",
+    "dev": "webpack --mode development",
     "build": "npm run webpack",
     "publish": "vsce publish",
     "watch": "npm-watch"
