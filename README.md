@@ -7,7 +7,7 @@ This plugin highlights the types and variable names of UML diagrams.
 * Can highlight entire UML diagram
 ![Highlight Diagram](/doc/whole-diagram.gif)
 
-* 
+* Omit or include variable names
 ![Highlight Diagram](/doc/types-and-vars.gif)
 
 ## Install
