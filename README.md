@@ -12,9 +12,9 @@ This plugin highlights the types and variable names of UML diagrams.
 
 ## Install
 
-![Prerequisite VSCode Drawio Integration Plugin](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio)
+[Prerequisite VSCode Drawio Integration Plugin](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio)
 
-![Download Plugin for VSCode](https://marketplace.visualstudio.com/items?itemName=MarKEYfrfx.umlhighlighter)
+[Download Plugin for VSCode](https://marketplace.visualstudio.com/items?itemName=MarKEYfrfx.umlhighlighter)
 
 ## Compile
 Must make sure to clone with `--recursive` to ensure submodule is cloned.
