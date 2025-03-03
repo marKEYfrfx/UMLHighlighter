@@ -2,6 +2,9 @@
   "name": "umlhighlighter",
   "version": "1.0.0",
   "description": "",
+  "license": "GPL-3.0",
+  "publisher": "MarKEYfrfx",
+  "repository": "https://github.com/marKEYfrfx/UMLHighlighter",
   "engines": {
     "vscode": "^1.46.0"
   },
